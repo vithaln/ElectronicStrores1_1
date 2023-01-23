@@ -2,6 +2,9 @@ package com.vithal.electronic.store.dtos;
 
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
@@ -9,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.vithal.electronic.store.entities.Role;
 import com.vithal.electronic.store.validate.ImageNameValid;
 
 @Getter
@@ -42,4 +46,7 @@ public class UserDto {
 
     @ImageNameValid
     private String imageName;
+    
+    private Set<RoleDto> roles=new HashSet<>();
+
 }

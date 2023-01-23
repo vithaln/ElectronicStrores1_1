@@ -15,9 +15,11 @@ import org.springframework.stereotype.Service;
 import com.vithal.electronic.store.dtos.ApiResponseMessage;
 import com.vithal.electronic.store.dtos.PageableResponse;
 import com.vithal.electronic.store.dtos.UserDto;
+import com.vithal.electronic.store.entities.Role;
 import com.vithal.electronic.store.entities.User;
 import com.vithal.electronic.store.exceptions.ResourceNotFoundException;
 import com.vithal.electronic.store.helper.Helper;
+import com.vithal.electronic.store.repositories.RoleRepo;
 import com.vithal.electronic.store.repositories.UserRepository;
 import com.vithal.electronic.store.services.UserService;
 
@@ -46,7 +48,12 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder encoder;
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-
+    @Value("${normal.role.id}")
+	private String ROLE_NORMAL_ID;
+    
+    @Autowired
+    private RoleRepo repo;
+    
     @Override
     public UserDto createUser(UserDto userDto) {
 
@@ -57,6 +64,9 @@ public class UserServiceImpl implements UserService {
         userDto.setPassword(encoder.encode(userDto.getPassword()));
         // dto->entity
         User user = dtoToEntity(userDto);
+        //fetch role from db
+Role role = repo.findById(ROLE_NORMAL_ID).get();
+        user.getRoles().add(role);
         User savedUser = userRepository.save(user);
         //entity -> dto
         UserDto newDto = entityToDto(savedUser);
