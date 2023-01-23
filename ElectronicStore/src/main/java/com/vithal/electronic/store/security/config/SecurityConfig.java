@@ -3,8 +3,11 @@ package com.vithal.electronic.store.security.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,10 +15,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.vithal.electronic.store.security.JwtAuthenticationEntryPoint;
+import com.vithal.electronic.store.security.JwtAuthenticationFilter;
+
+import lombok.Builder;
 
 
 @Configuration
 public class SecurityConfig {
+	
+	@Autowired
+	private JwtAuthenticationEntryPoint authenticationEntryPoint;
+	
+	@Autowired
+	private JwtAuthenticationFilter authenticationFilter;
 	
 	/* this for InMemoryDB.
 	 * 
@@ -60,9 +75,17 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain chain(HttpSecurity http) throws Exception {
 		
-		http.csrf().disable().cors().disable() .authorizeRequests().anyRequest().authenticated()
+		http.csrf().disable().cors().disable() .authorizeRequests()
+		.antMatchers("/auth/login").permitAll()
+		.anyRequest().authenticated()
 		.and()
-		.httpBasic();
+		.exceptionHandling()
+		.authenticationEntryPoint(authenticationEntryPoint)
+		.and()
+		.sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		 http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);		
 		
 		
 		return http.build();
@@ -91,6 +114,10 @@ public class SecurityConfig {
 		
 		return new BCryptPasswordEncoder();
 	}
-
+@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		
+		return config.getAuthenticationManager();
+	}
 
 }
