@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.vithal.electronic.store.dtos.ApiResponseMessage;
@@ -41,6 +42,8 @@ public class UserServiceImpl implements UserService {
     @Value("${user.profile.image.path}")
     private String imagePath;
 
+    @Autowired
+    private PasswordEncoder encoder;
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 
@@ -50,6 +53,8 @@ public class UserServiceImpl implements UserService {
         //generate unique id in string format
         String userId = UUID.randomUUID().toString();
         userDto.setUserId(userId);
+        //encode password
+        userDto.setPassword(encoder.encode(userDto.getPassword()));
         // dto->entity
         User user = dtoToEntity(userDto);
         User savedUser = userRepository.save(user);
