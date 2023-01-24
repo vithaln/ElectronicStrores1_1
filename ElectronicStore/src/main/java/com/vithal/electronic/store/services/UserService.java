@@ -1,6 +1,7 @@
 package com.vithal.electronic.store.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.vithal.electronic.store.dtos.PageableResponse;
 import com.vithal.electronic.store.dtos.UserDto;
@@ -33,5 +34,7 @@ public interface UserService {
     List<UserDto> searchUser(String keyword);
 
     //other user specific features
+    
+    Optional<User> findUserByEmailOptional(String email);
 
 }

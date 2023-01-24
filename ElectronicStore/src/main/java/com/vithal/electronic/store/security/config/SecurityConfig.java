@@ -1,6 +1,7 @@
 package com.vithal.electronic.store.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,19 +11,17 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.vithal.electronic.store.security.JwtAuthenticationEntryPoint;
 import com.vithal.electronic.store.security.JwtAuthenticationFilter;
-
-import lombok.Builder;
 
 
 @Configuration
@@ -78,7 +77,9 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain chain(HttpSecurity http) throws Exception {
 		
-		http.csrf().disable().cors().disable() .authorizeRequests()
+		http.csrf().disable()
+		//.cors().disable() 
+		.authorizeRequests()
 		.antMatchers("/auth/login").permitAll()
 		.antMatchers("/auth/current").permitAll()
 		.antMatchers(HttpMethod.POST,"/users")
@@ -126,5 +127,37 @@ public class SecurityConfig {
 		
 		return config.getAuthenticationManager();
 	}
+
+	/* 1:if we want to connect with frontEnd the we need use @CrossOrigin("*") 
+	 * but this needs to use by all controller where we want to use controllers.
+	 * that time we need use CORS, So instead this if we follow-up following configuration is best.
+	 * 
+	 * 2:CORS Configuration for the Globally.....
+	 */
+@Bean
+public FilterRegistrationBean corsFilter() {
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowCredentials(true);
+//    configuration.setAllowedOrigins(Arrays.asList("https://domain2.com","http://localhost:4200"));
+    configuration.addAllowedOriginPattern("*");
+    configuration.addAllowedHeader("Authorization");
+    configuration.addAllowedHeader("Content-Type");
+    configuration.addAllowedHeader("Accept");
+    configuration.addAllowedMethod("GET");
+    configuration.addAllowedMethod("POST");
+    configuration.addAllowedMethod("DELETE");
+    configuration.addAllowedMethod("PUT");
+    configuration.addAllowedMethod("OPTIONS");
+    configuration.setMaxAge(3600L);
+    source.registerCorsConfiguration("/**", configuration);
+
+    FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new CorsFilter(source));
+    filterRegistrationBean.setOrder(-110);
+    return filterRegistrationBean;
+
+
+}
 
 }

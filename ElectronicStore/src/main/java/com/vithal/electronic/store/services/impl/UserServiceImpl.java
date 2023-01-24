@@ -29,6 +29,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -179,4 +180,12 @@ Role role = repo.findById(ROLE_NORMAL_ID).get();
 
         return mapper.map(userDto, User.class);
     }
+
+
+	@Override
+	public Optional<User> findUserByEmailOptional(String email) {
+
+Optional<User> user = userRepository.findByEmail(email);
+		return user;
+	}
 }
