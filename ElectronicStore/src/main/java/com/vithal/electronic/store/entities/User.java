@@ -8,6 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,6 +31,7 @@ public class User implements UserDetails{
     private String userId;
 
     @Column(name = "user_name")
+    @ApiModelProperty(value = "UserName",name = "username",required = true)
     private String name;
 
     @Column(name = "user_email", unique = true)

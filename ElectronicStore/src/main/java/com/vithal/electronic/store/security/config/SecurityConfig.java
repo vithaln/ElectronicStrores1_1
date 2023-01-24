@@ -34,6 +34,20 @@ public class SecurityConfig {
 	@Autowired
 	private JwtAuthenticationFilter authenticationFilter;
 	
+	private final String[] PUBLIC_URLS = {
+
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-resources/**",
+            "/v3/api-docs",
+            "/v2/api-docs",
+            "/test"
+
+
+    };
+	
+	
+	
 	/* this for InMemoryDB.
 	 * 
 	 * @Bean public UserDetailsService detailsService() {
@@ -80,6 +94,7 @@ public class SecurityConfig {
 		http.csrf().disable()
 		//.cors().disable() 
 		.authorizeRequests()
+		.antMatchers(PUBLIC_URLS).permitAll()
 		.antMatchers("/auth/login").permitAll()
 		.antMatchers("/auth/current").permitAll()
 		.antMatchers(HttpMethod.POST,"/users")
@@ -128,12 +143,16 @@ public class SecurityConfig {
 		return config.getAuthenticationManager();
 	}
 
+
+
 	/* 1:if we want to connect with frontEnd the we need use @CrossOrigin("*") 
 	 * but this needs to use by all controller where we want to use controllers.
 	 * that time we need use CORS, So instead this if we follow-up following configuration is best.
 	 * 
 	 * 2:CORS Configuration for the Globally.....
 	 */
+
+
 @Bean
 public FilterRegistrationBean corsFilter() {
 

@@ -19,6 +19,11 @@ import com.vithal.electronic.store.dtos.UserDto;
 import com.vithal.electronic.store.services.FileService;
 import com.vithal.electronic.store.services.UserService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.awt.*;
@@ -29,6 +34,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@Api(value = "USER-CONTROLLER", description  = "This is related API'S to perform user operations..")
 public class UserController {
 
     @Autowired
@@ -45,6 +51,15 @@ public class UserController {
     //create
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiOperation(value = "Create new user")
+@ApiResponses(value = {
+		
+		@ApiResponse(code = 200,message = "SUCCESS || OK"),
+		@ApiResponse(code = 201,message = "CREATED"),
+		@ApiResponse(code = 401,message = "UnAuthorized")
+
+		
+})
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         UserDto userDto1 = userService.createUser(userDto);
         return new ResponseEntity<>(userDto1, HttpStatus.CREATED);
@@ -79,6 +94,7 @@ public class UserController {
 
     //get all
     @GetMapping
+    @ApiOperation(value = "This API for Get-AllUsers",response = ResponseEntity.class)
     public ResponseEntity<PageableResponse<UserDto>> getAllUsers(
             @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
@@ -90,6 +106,7 @@ public class UserController {
 
     //get single
     @GetMapping("/{userId}")
+    @ApiOperation(value = "This is fot get single User by Id")
     public ResponseEntity<UserDto> getUser(@PathVariable String userId) {
         return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }

@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/auth")
 @Slf4j
-@CrossOrigin("*")
+//@CrossOrigin("*")
 public class AuthController {
 	
 	@Autowired
@@ -65,12 +65,12 @@ public class AuthController {
 	
 	
 	@GetMapping("/current")
-	public ResponseEntity<UserDetails>getCurrentUser(Principal principal){
+	public ResponseEntity<UserDto>getCurrentUser(Principal principal){
 		String name = principal.getName();
 		
 		UserDetails user = detailsService.loadUserByUsername(name);
-		return new ResponseEntity<UserDetails>(user,HttpStatus.OK);
-		
+		UserDto userDto = mapper.map(user, UserDto.class);
+		return new ResponseEntity<UserDto>(userDto,HttpStatus.OK);
 	}
 	@PostMapping("/login")
 	public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest jwtRequest){
