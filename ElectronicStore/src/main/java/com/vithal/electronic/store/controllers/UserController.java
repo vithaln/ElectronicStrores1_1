@@ -50,7 +50,7 @@ public class UserController {
 
     //create
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @ApiOperation(value = "Create new user")
 @ApiResponses(value = {
 		
