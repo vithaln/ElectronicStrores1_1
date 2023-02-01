@@ -19,16 +19,22 @@ import springfox.documentation.spring.web.plugins.ApiSelectorBuilder;
 import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 public class SwaggerConfig {
+	
+	//let's create Docket Bean
 	@Bean
     public Docket docket() {
+		
         Docket docket = new Docket(DocumentationType.SWAGGER_2);
         docket.apiInfo(getApiInfo());
+        
         docket.securityContexts(Arrays.asList(getSecurityContext()));
         docket.securitySchemes(Arrays.asList(getSchemes()));
+        
         ApiSelectorBuilder select = docket.select();
         select.apis(RequestHandlerSelectors.any());
         select.paths(PathSelectors.any());
         Docket build = select.build();
+        
         return build;
     }
 
@@ -57,7 +63,7 @@ public class SwaggerConfig {
 
         ApiInfo apiInfo = new ApiInfo(
                 "Electronic Store Backend : APIS ",
-                "This is backend project created by Vithal N",
+                "This is backend project created by Vithal Nivargi",
                 "1.0.0V",
                 "",
                 new Contact("Vithal", "", "vnnivargi1998@gmail.com"),
