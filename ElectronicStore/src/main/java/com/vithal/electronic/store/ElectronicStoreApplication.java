@@ -16,7 +16,6 @@ import com.vithal.electronic.store.repositories.RoleRepo;
 public class ElectronicStoreApplication implements CommandLineRunner {
 
 	@Autowired
-	
 	private PasswordEncoder encoder;
 
 	@Autowired
