@@ -1,6 +1,7 @@
 package com.vithal.electronic.store.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.vithal.electronic.store.dtos.PageableResponse;
@@ -36,5 +37,11 @@ public interface UserService {
     //other user specific features
     
     Optional<User> findUserByEmailOptional(String email);
+
+
+	 UserDto updatePatchFields(String userId, Map<String, Object> fields);
+
+
+	
 
 }

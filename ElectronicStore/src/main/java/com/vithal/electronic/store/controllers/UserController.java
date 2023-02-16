@@ -16,6 +16,7 @@ import com.vithal.electronic.store.dtos.ApiResponseMessage;
 import com.vithal.electronic.store.dtos.ImageResponse;
 import com.vithal.electronic.store.dtos.PageableResponse;
 import com.vithal.electronic.store.dtos.UserDto;
+import com.vithal.electronic.store.entities.User;
 import com.vithal.electronic.store.services.FileService;
 import com.vithal.electronic.store.services.UserService;
 
@@ -30,121 +31,123 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
-@Api(value = "USER-CONTROLLER", description  = "This is related API'S to perform user operations..")
+@Api(value = "USER-CONTROLLER", description = "This is related API'S to perform user operations..")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @Autowired
-    private FileService fileService;
+	@Autowired
+	private FileService fileService;
 
-    @Value("${user.profile.image.path}")
-    private String imageUploadPath;
+	@Value("${user.profile.image.path}")
+	private String imageUploadPath;
 
-    private Logger logger = LoggerFactory.getLogger(UserController.class);
+	private Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    //create
-    @PostMapping
-    //@PreAuthorize("hasRole('ADMIN')")
-    @ApiOperation(value = "Create new user")
-@ApiResponses(value = {
-		
-		@ApiResponse(code = 200,message = "SUCCESS || OK"),
-		@ApiResponse(code = 201,message = "CREATED"),
-		@ApiResponse(code = 401,message = "UnAuthorized")
+	// create
+	@PostMapping
+	// @PreAuthorize("hasRole('ADMIN')")
+	@ApiOperation(value = "Create new user")
+	@ApiResponses(value = {
 
-		
-})
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
-        UserDto userDto1 = userService.createUser(userDto);
-        return new ResponseEntity<>(userDto1, HttpStatus.CREATED);
-    }
+			@ApiResponse(code = 200, message = "SUCCESS || OK"), @ApiResponse(code = 201, message = "CREATED"),
+			@ApiResponse(code = 401, message = "UnAuthorized")
 
-    //update
-    @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(
-            @PathVariable("userId") String userId,
-            @Valid @RequestBody UserDto userDto
-    ) {
-        UserDto updatedUserDto = userService.updateUser(userDto, userId);
-        return new ResponseEntity<>(updatedUserDto, HttpStatus.OK);
-    }
+	})
+	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
+		UserDto userDto1 = userService.createUser(userDto);
+		return new ResponseEntity<>(userDto1, HttpStatus.CREATED);
+	}
 
+	// update
+	@PutMapping("/{userId}")
+	public ResponseEntity<UserDto> updateUser(@PathVariable("userId") String userId,
+			@Valid @RequestBody UserDto userDto) {
+		UserDto updatedUserDto = userService.updateUser(userDto, userId);
+		return new ResponseEntity<>(updatedUserDto, HttpStatus.OK);
+	}
 
-    //delete
-    @DeleteMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponseMessage> deleteUser(@PathVariable String userId) {
-        userService.deleteUser(userId);
-        ApiResponseMessage message
-                = ApiResponseMessage
-                .builder()
-                .message("User is deleted Successfully !!")
-                .success(true)
-                .status(HttpStatus.OK)
-                .build();
+	// delete
+	@DeleteMapping("/{userId}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<ApiResponseMessage> deleteUser(@PathVariable String userId) {
+		userService.deleteUser(userId);
+		ApiResponseMessage message = ApiResponseMessage.builder().message("User is deleted Successfully !!")
+				.success(true).status(HttpStatus.OK).build();
 
-        return new ResponseEntity<>(message, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(message, HttpStatus.OK);
+	}
 
-    //get all
-    @GetMapping
-    @ApiOperation(value = "This API for Get-AllUsers",response = ResponseEntity.class)
-    public ResponseEntity<PageableResponse<UserDto>> getAllUsers(
-            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir
-    ) {
-        return new ResponseEntity<>(userService.getAllUser(pageNumber, pageSize, sortBy, sortDir), HttpStatus.OK);
-    }
+	// get all
+	@GetMapping
+	@ApiOperation(value = "This API for Get-AllUsers", response = ResponseEntity.class)
+	public ResponseEntity<PageableResponse<UserDto>> getAllUsers(
+			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+			@RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir) {
+		return new ResponseEntity<>(userService.getAllUser(pageNumber, pageSize, sortBy, sortDir), HttpStatus.OK);
+	}
 
-    //get single
-    @GetMapping("/{userId}")
-    @ApiOperation(value = "This is fot get single User by Id")
-    public ResponseEntity<UserDto> getUser(@PathVariable String userId) {
-        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
-    }
+	// get single
+	@GetMapping("/{userId}")
+	@ApiOperation(value = "This is fot get single User by Id")
+	public ResponseEntity<UserDto> getUser(@PathVariable String userId) {
+		return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
+	}
 
-    //get by email
-    @GetMapping("/email/{email}")
-    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
-        return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
-    }
+	// get by email
+	@GetMapping("/email/{email}")
+	public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
+		return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
+	}
 
-    //search user
-    @GetMapping("/search/{keywords}")
-    public ResponseEntity<List<UserDto>> searchUser(@PathVariable String keywords) {
-        return new ResponseEntity<>(userService.searchUser(keywords), HttpStatus.OK);
-    }
+	// search user
+	@GetMapping("/search/{keywords}")
+	public ResponseEntity<List<UserDto>> searchUser(@PathVariable String keywords) {
+		return new ResponseEntity<>(userService.searchUser(keywords), HttpStatus.OK);
+	}
 
-    //upload user image
-    @PostMapping("/image/{userId}")
-    public ResponseEntity<ImageResponse> uploadUserImage(@RequestParam("userImage") MultipartFile image, @PathVariable String userId) throws IOException {
-        String imageName = fileService.uploadFile(image, imageUploadPath);
-        UserDto user = userService.getUserById(userId);
-        user.setImageName(imageName);
-        UserDto userDto = userService.updateUser(user, userId);
-        ImageResponse imageResponse = ImageResponse.builder().imageName(imageName).success(true).message("image is uploaded successfully ").status(HttpStatus.CREATED).build();
-        return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
+	// upload user image
+	@PostMapping("/image/{userId}")
+	public ResponseEntity<ImageResponse> uploadUserImage(@RequestParam("userImage") MultipartFile image,
+			@PathVariable String userId) throws IOException {
+		String imageName = fileService.uploadFile(image, imageUploadPath);
+		UserDto user = userService.getUserById(userId);
+		user.setImageName(imageName);
+		UserDto userDto = userService.updateUser(user, userId);
+		ImageResponse imageResponse = ImageResponse.builder().imageName(imageName).success(true)
+				.message("image is uploaded successfully ").status(HttpStatus.CREATED).build();
+		return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
 
-    }
+	}
 
-    //serve user image
+	// serve user image
 
-    @GetMapping(value = "/image/{userId}")
-    public void serveUserImage(@PathVariable String userId, HttpServletResponse response) throws IOException {
-        UserDto user = userService.getUserById(userId);
-        logger.info("User image name : {} ", user.getImageName());
-        InputStream resource = fileService.getResource(imageUploadPath, user.getImageName());
-        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-        StreamUtils.copy(resource, response.getOutputStream());
+	@GetMapping(value = "/image/{userId}")
+	public void serveUserImage(@PathVariable String userId, HttpServletResponse response) throws IOException {
+		UserDto user = userService.getUserById(userId);
+		logger.info("User image name : {} ", user.getImageName());
+		InputStream resource = fileService.getResource(imageUploadPath, user.getImageName());
+		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+		StreamUtils.copy(resource, response.getOutputStream());
 
-    }
+	}
+
+	// PatchMapping annotation used to partially update.
+	// few fields update of them.
+	@PatchMapping("/{userId}")
+	public ResponseEntity<UserDto> updatePatchFields(@PathVariable String userId,
+			@RequestBody Map<String, Object> fields) {
+
+		UserDto updatePatchFields = userService.updatePatchFields(userId, fields);
+		return new ResponseEntity<UserDto>(updatePatchFields, HttpStatus.OK);
+
+	}
 
 }
